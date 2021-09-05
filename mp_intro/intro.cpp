@@ -22,14 +22,11 @@ cs225::PNG myArt(unsigned int width, unsigned int height) {
   cs225::PNG png(width, height);
   for (unsigned int x = 0; x < width; x++) {
     for (unsigned int y = 0; y < height; y++) {
-      cs225::HSLAPixel pix = png.getPixel(x,y);
-      pix.a = 1.0;
-      // pix.h = ((2.1 * x) + 44) + ((1.7 * y) + 67);
-      pix.h = 216;
+      cs225::HSLAPixel &pix = png.getPixel(x,y);
+      pix.h = (x * 0.7) + (y * 1.4);
       pix.l = 3.7 * y;
       pix.s = 0.8 * (x + y);
     }
   }
-
   return png;
 }
