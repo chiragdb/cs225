@@ -61,9 +61,22 @@ T sum(stack<T>& s)
  */
 bool isBalanced(queue<char> input)
 {
-
-    // @TODO: Make less optimistic
-    return true;
+    stack<char> char_stack;
+    while (input.empty() == false) {
+        char first_char = input.front();
+        if (first_char == '[') {
+            char_stack.push(first_char);
+        } else if (first_char == ']') {
+            if (char_stack.empty() == true) {
+                return false;
+            } else {
+                char_stack.pop();
+            }
+        }
+        input.pop();
+    }
+    bool output = char_stack.empty();
+    return output;
 }
 
 /**
@@ -84,8 +97,36 @@ bool isBalanced(queue<char> input)
 template <typename T>
 void scramble(queue<T>& q)
 {
-    stack<T> s;
-    // optional: queue<T> q2;
+    stack<T> t_stack;
+    queue<T> copy;
+    int position = 0;
+    int group = 1;
+    while (q.empty() == false) {
+        if (position == group) {
+            position = 0;
+            group++;
+        }
+        if (group % 2 == 1) {
+            char temp = q.front();
+            q.pop();
+            copy.push(temp);
+            position++;
+        } else {
+            char temp = q.front();
+            t_stack.push(temp);
+            q.pop();
+            position++;
+            bool is_empty = q.empty();
+            if (is_empty == true || group == position) {
+                while (t_stack.empty() == false) {
+                    char temp = t_stack.top();
+                    t_stack.pop();
+                    copy.push(temp);
+                }
+            }
+        }
+    }
+    q = copy;
 
     // Your code here
 }
