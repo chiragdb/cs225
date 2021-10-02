@@ -78,9 +78,26 @@ void BinaryTree<T>::printLeftToRight(const Node* subRoot) const
     template <typename T>
 void BinaryTree<T>::mirror()
 {
-    //your code here
+    mirrorHelper(root);
 }
 
+template <typename T>
+void BinaryTree<T>::mirrorHelper(Node* n)
+{
+    if (n == nullptr) {
+        return;
+    }
+    Node* right_holder = n->right;
+    Node* left_holder = n->left;
+
+    Node* holder = n->left;
+    n->left = n->right;                         //swapping left and right nodes
+    n->right = holder;
+
+    mirrorHelper(right_holder);
+    mirrorHelper(left_holder);
+    //your code here
+}
 
 /**
  * isOrdered() function iterative version
@@ -91,8 +108,20 @@ void BinaryTree<T>::mirror()
 template <typename T>
 bool BinaryTree<T>::isOrderedIterative() const
 {
-    // your code here
-    return false;
+    InorderTraversal<T> trav(root);
+    typename TreeTraversal<T>::Iterator iter = trav.begin();
+    T prev = (*iter)->elem;
+    ++iter;
+    while(iter != trav.end()) {
+        T curr = (*iter)->elem;
+        if (curr >= prev) {
+            prev = curr;
+            ++iter;
+        } else {
+            return false;
+        }
+    }
+    return true;
 }
 
 /**
@@ -104,7 +133,31 @@ bool BinaryTree<T>::isOrderedIterative() const
 template <typename T>
 bool BinaryTree<T>::isOrderedRecursive() const
 {
-    // your code here
-    return false;
+    return isOrderedRecursiveHelper(root, nullptr, nullptr);
+    return true;
 }
+
+template <typename T>
+bool BinaryTree<T>::isOrderedRecursiveHelper(Node* r, Node* left_sub, Node* right_sub) const
+{
+    if (r == nullptr) {
+        return true;
+    } 
+    if (left_sub != nullptr) {
+        if (r->elem < left_sub->elem) {
+            return false;
+        }
+    }
+    if (right_sub != nullptr) {
+        if (right_sub->elem < r->elem) {
+            return false;
+        }
+    }
+    Node* next_left = r->left;
+    Node* next_right = r->right;
+    return (isOrderedRecursiveHelper(next_right, r, right_sub) && isOrderedRecursiveHelper(next_left, left_sub, r));
+    return true;
+}
+
+
 

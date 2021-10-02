@@ -136,6 +136,7 @@ class BinaryTree
          *  criterion for a binary tree to be a binary search tree.
          */
         bool isOrderedRecursive() const;
+        bool isOrderedRecursiveHelper(Node* r, Node* left_sub, Node* right_sub) const;
 
         /**
          *  Uses vector to store values of the nodes of a binary tree in order.
@@ -172,7 +173,7 @@ class BinaryTree
         void printLeftToRight(const Node* subRoot) const;
 
 
-
+        void mirrorHelper(Node* n);
 
         /**
          * Private helper function for the sorted public insert function.
