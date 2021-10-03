@@ -228,6 +228,79 @@ void List<T>::reverse() {
 template <typename T>
 void List<T>::reverse(ListNode *& startPoint, ListNode *& endPoint) {
   /// @todo Graded in MP3.2
+  if (startPoint == nullptr) {
+    return;
+  }
+  if (endPoint == nullptr) {
+    return;
+  }
+  if (startPoint == endPoint) {
+    return;
+  }
+  std::vector<ListNode*> node_vector_ordered;
+  ListNode* curr = startPoint;
+  while (curr != nullptr) {
+    if (curr == endPoint) {
+      node_vector_ordered.push_back(curr);
+      break;
+    }
+    node_vector_ordered.push_back(curr);
+    curr = curr->next;
+  }
+  std::vector<ListNode*> node_vector_reversed;
+  for (int i = node_vector_ordered.size() - 1; i >= 0; --i) {
+    node_vector_reversed.push_back(node_vector_ordered.at(i));
+  }
+  // std::cout << "Reversed Vector Size: " << node_vector_ordered.size() << std::endl;
+  // for (unsigned j = 0; j < node_vector_reversed.size(); j++) {
+  //   std::cout << node_vector_reversed.at(j)->data << std::endl;
+  // }
+  // ListNode* temp = head_;
+  // for (unsigned j = 0; j < node_vector_reversed.size(); j++) {
+  //   if (startPoint == head_ && endPoint == tail_) {
+  //     if (temp == head_) {
+  //       temp = head_ = node_vector_reversed.at(j);
+  //       temp->prev = nullptr;
+  //       temp = temp->next;
+  //     } else if (temp == tail_) {
+  //       temp = tail_ = node_vector_reversed.at(j);
+  //       tail_->next = nullptr;
+  //     } else {
+  //       temp = node_vector_reversed.at(j);
+  //       temp->prev = node_vector_reversed.at(j - 1);
+  //       temp->next = node_vector_reversed.at(j + 1);
+  //       temp = temp->next;
+  //     }
+  //   }
+  // }
+
+  ListNode* start_prev = startPoint->prev;
+  ListNode* end_next = endPoint->next;
+  ListNode* temp = startPoint;
+  
+  while (temp != endPoint) {
+    ListNode* post = temp->next;
+    temp->next = temp->prev;
+    temp->prev = post;
+    temp = post;
+  }
+
+  startPoint->next = endPoint->next;
+  ListNode* end_prev = endPoint->prev;
+  endPoint->next = end_prev;
+  endPoint->prev = start_prev;
+
+  ListNode* end_holder = endPoint;
+  endPoint = startPoint;
+  startPoint = end_holder;
+
+  if (start_prev != nullptr) {
+    start_prev->next = startPoint;
+  }
+
+  if (end_next != nullptr) {
+    end_next->prev = endPoint;
+  }
 }
 
 /**
