@@ -164,19 +164,45 @@ typename List<T>::ListNode * List<T>::split(ListNode * start, int splitPoint) {
 template <typename T>
 void List<T>::tripleRotate() {
   // @todo Graded in MP3.1
-  // if (length_ < 3) {
-  //   return;
+  if (length_ < 3) {
+    return;
+  }
+  ListNode* curr = head_;
+  std::vector<ListNode*> node_vector;
+  while (curr != nullptr) {
+    node_vector.push_back(curr);
+    curr = curr->next;
+  }
+  unsigned num_swaps = length_/3;
+  for (unsigned i = 0; i < num_swaps; i++) {
+    ListNode* temp_one = node_vector.at(i * 3);
+    ListNode* temp_two = node_vector.at((i * 3) + 1);
+    ListNode* temp_three = node_vector.at((i * 3) + 2);
+    node_vector.at(i * 3) = temp_two;
+    node_vector.at((i * 3) + 1) = temp_three;
+    node_vector.at((i * 3) + 2) = temp_one;
+  }
+  // for (unsigned j = 0; j < node_vector.size(); j++) {
+  //   std::cout << node_vector.at(j)->data << std::endl;
   // }
-  // ListNode* node1 = head_;
-  // ListNode* node2 = head_->next;
-  // ListNode* node3 = head_->next->next;
-  // ListNode* temp = head->next->next->next;
-  // head_ = node2;
-  // head_->prev = NULL;
-  // head_->next = node3;
-  // node3->prev = head_;
-  // node3->next = node1;
-  // node1->prev = node3;
+  ListNode* temp = head_;
+  for (unsigned j = 0; j < node_vector.size(); j++) {
+    if (j == 0) {
+      head_ = temp = node_vector.at(j);
+      temp->prev = nullptr; 
+      temp = temp->next;
+    } else if (j == node_vector.size() - 1) {
+      tail_ = node_vector.at(node_vector.size() - 1);
+      tail_->next = nullptr;
+    } else {
+      temp = node_vector.at(j);
+      temp->prev = node_vector.at(j - 1);
+      temp->next = node_vector.at(j + 1);
+      temp = temp->next;
+    }
+
+  }
+
 }
 
 
