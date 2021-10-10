@@ -83,7 +83,35 @@ HuffmanTree::removeSmallest(queue<TreeNode*>& singleQueue,
      * smaller of the two queues heads is the smallest item in either of
      * the queues. Return this item after removing it from its queue.
      */
-    return NULL;
+
+     TreeNode* single = nullptr;
+     TreeNode* merge = nullptr;
+     if (singleQueue.empty() == false) {
+         single = singleQueue.front();
+     }
+     if (mergeQueue.empty() == false) {
+         merge = mergeQueue.front();
+     }
+     if (single == nullptr && merge == nullptr) {
+         return nullptr;
+     } 
+     if (merge != nullptr && single == nullptr) {
+         mergeQueue.pop();
+         return merge;
+     }
+     if (single != nullptr && merge == nullptr) {
+         singleQueue.pop();
+         return single;
+     }
+    int singleFrequency = (single->freq).getFrequency();
+    int mergeFrequency = (merge->freq).getFrequency();
+    if (singleFrequency > mergeFrequency) {
+        mergeQueue.pop();
+        return merge;
+    } else {
+        singleQueue.pop();
+        return single;
+    }
 }
 
 void HuffmanTree::buildTree(const vector<Frequency>& frequencies)
@@ -91,6 +119,25 @@ void HuffmanTree::buildTree(const vector<Frequency>& frequencies)
     queue<TreeNode*> singleQueue; // Queue containing the leaf nodes
     queue<TreeNode*> mergeQueue;  // Queue containing the inner nodes
 
+    for (unsigned i = 0; i < frequencies.size(); i++) {
+        Frequency freq = frequencies.at(i);
+        TreeNode* treenode = new TreeNode(freq);
+        singleQueue.push(treenode);
+    }
+
+    while ((singleQueue.size() + mergeQueue.size()) > 1) {
+        TreeNode* first_node = removeSmallest(singleQueue, mergeQueue);
+        TreeNode* second_node = removeSmallest(singleQueue, mergeQueue);
+        int first_freq = (first_node->freq).getFrequency();
+        int second_freq = (second_node->freq).getFrequency();
+        int new_val = first_freq + second_freq;
+        TreeNode* tn = new TreeNode(new_val);
+        tn->left = first_node;
+        tn->right = second_node;
+        mergeQueue.push(tn);
+    }
+    TreeNode* new_root = mergeQueue.front();
+    root_ = new_root;
     /**
      * @todo Your code here!
      *
@@ -122,6 +169,19 @@ void HuffmanTree::decode(stringstream& ss, BinaryFileReader& bfile)
 {
     TreeNode* current = root_;
     while (bfile.hasBits()) {
+        if (bfile.getNextBit() == true) {
+            current = current->right;
+        } else {
+            current = current->left;
+        }
+        TreeNode* next_left = current->left;
+        TreeNode* next_right = current->right;
+        auto tree_char = (current->freq).getCharacter();
+        if (next_left == nullptr && next_right == nullptr) {
+            ss << tree_char;
+            current = root_;
+        }
+
         /**
          * @todo Your code here!
          *
@@ -143,6 +203,15 @@ void HuffmanTree::writeTree(BinaryFileWriter& bfile)
 
 void HuffmanTree::writeTree(TreeNode* current, BinaryFileWriter& bfile)
 {
+
+    if (current->left == nullptr && current->right == nullptr) {
+        bfile.writeBit(1);
+        bfile.writeByte((current->freq).getCharacter());
+    } else {
+        bfile.writeBit(0);
+        writeTree(current->left, bfile);
+        writeTree(current->right, bfile);
+    }
     /**
      * @todo Your code here!
      *
@@ -162,6 +231,19 @@ void HuffmanTree::writeTree(TreeNode* current, BinaryFileWriter& bfile)
 
 HuffmanTree::TreeNode* HuffmanTree::readTree(BinaryFileReader& bfile)
 {
+
+    while (bfile.hasBits() == true) {
+        if (bfile.getNextBit() == true) {
+            Frequency freq(bfile.getNextByte(), 0);
+            TreeNode* tn = new TreeNode(freq);
+            return tn;
+        } else {
+            TreeNode* tn = new TreeNode(0);
+            tn->left = readTree(bfile);
+            tn->right = readTree(bfile);
+            return tn;
+        }
+    }
     /**
      * @todo Your code here!
      *
