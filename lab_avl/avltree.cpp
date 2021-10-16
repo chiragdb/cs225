@@ -26,6 +26,11 @@ V AVLTree<K, V>::find(Node* subtree, const K& key) const
 }
 
 template <class K, class V>
+void AVLTree<K, V>::increment_height(Node*& n) {
+    n->height = 1 + std::max(heightOrNeg1(n->right), heightOrNeg1(n->left));
+}
+
+template <class K, class V>
 void AVLTree<K, V>::rotateLeft(Node*& t)
 {
     functionCalls.push_back("rotateLeft"); // Stores the rotation name (don't remove this)
@@ -33,7 +38,9 @@ void AVLTree<K, V>::rotateLeft(Node*& t)
     Node* temp = t->right;
     t->right = temp->left;
     temp->left = t;
+    increment_height(t);
     t = temp;
+    increment_height(t);
 }
 
 template <class K, class V>
@@ -53,7 +60,9 @@ void AVLTree<K, V>::rotateRight(Node*& t)
     Node* temp = t->left;
     t->left = temp->right;
     temp->right = t;
+    increment_height(t);
     t = temp;
+    increment_height(t);
 }
 
 template <class K, class V>
@@ -76,52 +85,22 @@ void AVLTree<K, V>::rebalance(Node*& subtree)
         int right_most = heightOrNeg1(subtree->right->right);
         int left_child = heightOrNeg1(subtree->right->left);
         int right_difference = right_most - left_child;
-        if (right_difference != 1) {
-            rotateRightLeft(subtree);
-        } else {
+        if (right_difference == 1) {
             rotateLeft(subtree);
+        } else {
+            rotateRightLeft(subtree);
         }
     } else if (difference == -2) {
         int left_most = heightOrNeg1(subtree->left->left);
         int right_child = heightOrNeg1(subtree->left->right);
         int left_difference = right_child - left_most;
-        if (left_difference != -1) {
-            rotateLeftRight(subtree);
-        } else {
+        if (left_difference == -1) {
             rotateRight(subtree);
-        }
-    }
-    if (subtree->right != nullptr) {
-        int right_most = heightOrNeg1(subtree->right->right);
-        int left_child = heightOrNeg1(subtree->right->left);
-        int temp_max = 0;
-        if (right_most >= left_child) {
-            temp_max = right_most;
         } else {
-            temp_max = left_child;
+            rotateLeftRight(subtree);
         }
-        subtree->right->height = 1 + temp_max;
     }
-    if (subtree->left != nullptr) {
-        int left_most = heightOrNeg1(subtree->left->left);
-        int right_child = heightOrNeg1(subtree->left->right);
-        int temp_max = 0;
-        if (left_most >= right_child) {
-            temp_max = left_most;
-        } else {
-            temp_max = right_child;
-        }
-        subtree->left->height = 1 + temp_max;
-    }
-    int max = 0;
-    int left_height = heightOrNeg1(subtree->left);
-    int right_height = heightOrNeg1(subtree->right);
-    if (left_height >= right_height) {
-        max = left_height;
-    } else {
-        max = right_height;
-    }
-    subtree->height = 1 + max;
+    increment_height(subtree);
 }
 
 template <class K, class V>
@@ -140,8 +119,12 @@ void AVLTree<K, V>::insert(Node*& subtree, const K& key, const V& value)
         insert(subtree->right, key, value);
     } else if (key < subtree->key) {
         insert(subtree->left, key, value);
+    } else if (key == subtree->key) {
+        subtree->value = value;
+        return;
     }
     rebalance(subtree);
+    increment_height(subtree);
 }
 
 template <class K, class V>
@@ -164,6 +147,7 @@ void AVLTree<K, V>::remove(Node*& subtree, const K& key)
         if (subtree->left == NULL && subtree->right == NULL) {
             delete subtree;
             subtree = nullptr;
+            return;
             // your code here
         } else if (subtree->left != NULL && subtree->right != NULL) {
             Node* to_swap = subtree->left;
@@ -173,13 +157,19 @@ void AVLTree<K, V>::remove(Node*& subtree, const K& key)
             swap(subtree, to_swap);
             remove(subtree->left, key);
         } else {
-            if (subtree->right != nullptr) {
-                subtree = subtree->right;
-            } else {
-                subtree = subtree->left;
+            Node* curr;
+            if (subtree->right == nullptr) {
+                curr = subtree->left;
+            } 
+            if (subtree->left == nullptr) {
+                curr = subtree->right;
             }
+            *subtree = *curr;
+            delete curr;
+            curr = nullptr;
         }
         // your code here
     }
+    increment_height(subtree);
     rebalance(subtree);
 }
