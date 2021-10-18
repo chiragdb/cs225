@@ -5,6 +5,7 @@
 #include "colorPicker/ColorPicker.h"
 #include "imageTraversal/ImageTraversal.h"
 
+#include <vector>
 #include "Point.h"
 #include "Animation.h"
 #include "FloodFilledImage.h"
@@ -18,6 +19,7 @@ using namespace cs225;
  */
 FloodFilledImage::FloodFilledImage(const PNG & png) {
   /** @todo [Part 2] */
+  png_ = png;
 }
 
 /**
@@ -29,6 +31,8 @@ FloodFilledImage::FloodFilledImage(const PNG & png) {
  */
 void FloodFilledImage::addFloodFill(ImageTraversal & traversal, ColorPicker & colorPicker) {
   /** @todo [Part 2] */
+  cp.push_back(&colorPicker);
+  trav.push_back(&traversal);
 }
 
 /**
@@ -51,7 +55,20 @@ void FloodFilledImage::addFloodFill(ImageTraversal & traversal, ColorPicker & co
  *   - The final frame, after all pixels have been filed)
  */ 
 Animation FloodFilledImage::animate(unsigned frameInterval) const {
-  Animation animation;
   /** @todo [Part 2] */
+  Animation animation;
+  PNG holder = png_;
+  int inc = 1;
+  for (unsigned i = 0; i < trav.size(); i++) {
+    animation.addFrame(holder);
+    for (const Point& point : *(trav.at(i))) {
+      if (inc % frameInterval == 0) {
+        animation.addFrame(holder);
+      }
+      holder.getPixel(point.x, point.y) = cp.at(i)->getColor(point.x, point.y);
+      inc++;
+    }
+    animation.addFrame(holder);
+  }
   return animation;
 }

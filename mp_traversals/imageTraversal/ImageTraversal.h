@@ -29,7 +29,9 @@ public:
   class Iterator : std::iterator<std::forward_iterator_tag, Point> {
   public:
     Iterator();
+    Iterator(ImageTraversal* traversal, Point point, PNG png, double tolerance);
 
+    bool isValid(Point p);
     Iterator & operator++();
     Point operator*();
     bool operator!=(const Iterator &other);
@@ -40,7 +42,12 @@ public:
   private:
     /** @todo [Part 1] */
     /** add private members here if neccesary*/
-
+    bool completed;
+    Point initial_;
+    Point curr_;
+    ImageTraversal* trav;
+    PNG png_;
+    double tolerance_;
   };
 
   /**
@@ -74,6 +81,9 @@ public:
    * To see if the traversal has no points left
    * Virtual function. Derived class need to implement this
    */
+  virtual void addChecked(Point p) = 0;
+  virtual bool getChecked(Point p) = 0;
+
   virtual bool empty() const = 0;
 
 private:

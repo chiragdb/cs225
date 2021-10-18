@@ -27,6 +27,9 @@ public:
   ImageTraversal::Iterator begin();
   ImageTraversal::Iterator end();
 
+  void addChecked(Point p);
+  bool getChecked(Point p);
+
   void add(const Point & point);
   Point pop();
   Point peek() const;
@@ -35,4 +38,9 @@ public:
 private:
 	/** @todo [Part 1] */
 	/** add private members here*/
+  Point initial_;
+  PNG png_;
+  double tolerance_;
+  std::stack<Point> stack;
+  std::vector<std::vector<bool>> checked;
 };

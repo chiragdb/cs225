@@ -24,6 +24,24 @@
  */
 DFS::DFS(const PNG & png, const Point & start, double tolerance) {  
   /** @todo [Part 1] */
+  tolerance_ = tolerance;
+  png_ = png;
+  initial_ = start;
+  int x_val = initial_.x;
+  int y_val = initial_.y;
+  int width_dimen = png_.width();
+  int height_dimen = png_.height();
+  checked.resize(width_dimen);
+  stack.push(start);
+  for (unsigned i = 0; i < checked.size(); i++) {
+    std::vector<bool> temp = checked.at(i);
+    checked.at(i).resize(height_dimen);
+    unsigned s = checked.at(i).size();
+    for (unsigned j = 0; j < s; j++) {
+      checked.at(i).at(j) = false;
+    }
+  }
+  checked.at(x_val).at(y_val) = true;
 }
 
 /**
@@ -31,7 +49,7 @@ DFS::DFS(const PNG & png, const Point & start, double tolerance) {
  */
 ImageTraversal::Iterator DFS::begin() {
   /** @todo [Part 1] */
-  return ImageTraversal::Iterator();
+  return ImageTraversal::Iterator(this, initial_, png_, tolerance_);
 }
 
 /**
@@ -47,6 +65,7 @@ ImageTraversal::Iterator DFS::end() {
  */
 void DFS::add(const Point & point) {
   /** @todo [Part 1] */
+  stack.push(point);
 }
 
 /**
@@ -54,7 +73,9 @@ void DFS::add(const Point & point) {
  */
 Point DFS::pop() {
   /** @todo [Part 1] */
-  return Point(0, 0);
+  Point p = stack.top();
+  stack.pop();
+  return p;
 }
 
 /**
@@ -62,7 +83,16 @@ Point DFS::pop() {
  */
 Point DFS::peek() const {
   /** @todo [Part 1] */
-  return Point(0, 0);
+  return stack.top();
+}
+
+void DFS::addChecked(Point p) {
+  checked.at(p.x).at(p.y) = true;
+}
+
+bool DFS::getChecked(Point p) {
+  bool output = checked.at(p.x).at(p.y);
+  return output;
 }
 
 /**
@@ -70,5 +100,8 @@ Point DFS::peek() const {
  */
 bool DFS::empty() const {
   /** @todo [Part 1] */
-  return true;
+  if (stack.empty() == true) {
+    return true;
+  }
+  return false;
 }

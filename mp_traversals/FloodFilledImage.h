@@ -11,6 +11,7 @@
 #include "colorPicker/ColorPicker.h"
 #include "imageTraversal/ImageTraversal.h"
 
+#include <vector>
 #include "Point.h"
 #include "Animation.h"
 
@@ -30,5 +31,8 @@ public:
 private:
 	/** @todo [Part 2] */
 	/** add private members here*/
+  PNG png_;
+  std::vector<ColorPicker*> cp;
+  std::vector<ImageTraversal*> trav;
 
 };
