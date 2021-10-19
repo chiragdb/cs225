@@ -1,4 +1,3 @@
-
 #include "cs225/PNG.h"
 #include "FloodFilledImage.h"
 #include "Animation.h"
@@ -16,26 +15,29 @@ using namespace cs225;
 
 int main() {
 
-  // @todo [Part 3]
-  // - The code below assumes you have an Animation called `animation`
-  // - The code provided below produces the `myFloodFill.png` file you must
-  //   submit Part 3 of this assignment -- uncomment it when you're ready.
+  PNG png;      
+  png.readFromFile("tests/lantern.png");
+  Point lamp_center(30, 30);
+  FloodFilledImage lamp(png);
   
-  // PNG png;
-  // //png.readFromFile("DarthVader.png");
-  // png.readFromFile("")
-  // FloodFilledImage darth_vader(png);
 
-  // DFS dfs(png, Point(40, 40), 0.05);
-  // HSLAPixel temp(44, 1, 1);
-  // MyColorPicker color(temp);
-  // darth_vader.addFloodFill(dfs, color);
+  BFS bfs(png, lamp_center, 0.4);
+  DFS dfs(png, lamp_center, 0.4);
 
+  HSLAPixel color1(21, 1, 0.5);
+  HSLAPixel color2(347, 1, 0.5);
 
-  // Animation a = darth_vader.animate(1000);
-  // PNG final = a.getFrame(a.frameCount() - 1);
-  // final.writeToFile("myFloodFill.png");
-  // a.write("myFloodFill.gif");
+  MyColorPicker cp2(color1, color2, lamp_center);
+  SolidColorPicker solid(color2);
+
+  lamp.addFloodFill(bfs, cp2);
+  lamp.addFloodFill(dfs, solid);
+
+  Animation animation = lamp.animate(1000);
+
+  PNG final = animation.getFrame( animation.frameCount() - 1 );
+  final.writeToFile("myFloodFill.png");
+  animation.write("myFloodFill.gif");
 
   return 0;
 }

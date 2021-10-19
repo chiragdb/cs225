@@ -3,22 +3,24 @@
 
 #include "ColorPicker.h"
 #include "MyColorPicker.h"
-
+#include <cmath>
 using namespace cs225;
 
-/**
- * Picks the color for pixel (x, y).
- * Using your own algorithm
- */
 
-MyColorPicker::MyColorPicker(HSLAPixel pix) {
-  pixel = pix;
-}
+ MyColorPicker::MyColorPicker(HSLAPixel first_color, HSLAPixel second_color, Point p) {
+  c1 = first_color;
+  c2 = second_color;
+  start = p;
+ }
 
 HSLAPixel MyColorPicker::getColor(unsigned x, unsigned y) {
+  double x_difference = x - start.x;
+  double y_difference = y - start.y;
 
-  pixel.h = (2*(0.7 * x)) + (2*(4.4 * y));
+  double h = 100 * (x_difference + y_difference);
+  if (h >= 360) { 
+    h = h - 360;
+  }
 
-  /* @todo [Part 3] */
-  return pixel;
+  return HSLAPixel(h, 1, 0.7);
 }
