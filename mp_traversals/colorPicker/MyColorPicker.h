@@ -3,6 +3,8 @@
 #include "ColorPicker.h"
 #include "../cs225/HSLAPixel.h"
 #include "../Point.h"
+#include "../cs225/PNG.h"
+#include <string>
 
 using namespace cs225;
 
@@ -11,8 +13,9 @@ using namespace cs225;
  */
 class MyColorPicker : public ColorPicker {
 public:
+  MyColorPicker(HSLAPixel pix);
   HSLAPixel getColor(unsigned x, unsigned y);
 
 private:
-
+  HSLAPixel pixel;
 };

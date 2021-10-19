@@ -32,7 +32,7 @@ BFS::BFS(const PNG & png, const Point & start, double tolerance) {
   int width_dimen = png_.width();
   int height_dimen = png_.height();
   checked.resize(width_dimen);
-  queue.push(start);
+  queue.push(initial_);
   for (unsigned i = 0; i < checked.size(); i++) {
     std::vector<bool> temp = checked.at(i);
     checked.at(i).resize(height_dimen);

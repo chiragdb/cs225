@@ -27,17 +27,14 @@ DFS::DFS(const PNG & png, const Point & start, double tolerance) {
   tolerance_ = tolerance;
   png_ = png;
   initial_ = start;
+  stack.push(initial_);
   int x_val = initial_.x;
   int y_val = initial_.y;
-  int width_dimen = png_.width();
-  int height_dimen = png_.height();
-  checked.resize(width_dimen);
-  stack.push(start);
+  checked.resize(png_.width());
   for (unsigned i = 0; i < checked.size(); i++) {
     std::vector<bool> temp = checked.at(i);
-    checked.at(i).resize(height_dimen);
-    unsigned s = checked.at(i).size();
-    for (unsigned j = 0; j < s; j++) {
+    checked.at(i).resize(png_.height());
+    for (unsigned j = 0; j < checked.at(i).size(); j++) {
       checked.at(i).at(j) = false;
     }
   }

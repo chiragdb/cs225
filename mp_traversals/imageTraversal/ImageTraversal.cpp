@@ -39,8 +39,8 @@ bool ImageTraversal::Iterator::isValid(Point p) {
 
 ImageTraversal::Iterator::Iterator(ImageTraversal* traversal, Point point, PNG png, double tolerance) {
   initial_ = point;
-  curr_ = traversal->peek();
   trav = traversal;
+  curr_ = trav->peek();
   png_ = png;
   tolerance_ = tolerance;
   completed = false;
@@ -49,9 +49,10 @@ ImageTraversal::Iterator::Iterator(ImageTraversal* traversal, Point point, PNG p
 /**
  * Default iterator constructor.
  */
+
 ImageTraversal::Iterator::Iterator() {
   /** @todo [Part 1] */
-  completed = false;
+  completed = true;
 }
 
 /**
@@ -77,16 +78,25 @@ ImageTraversal::Iterator & ImageTraversal::Iterator::operator++() {
   if (isValid(to_right) == true) {
     HSLAPixel& init = png_.getPixel(initial_.x, initial_.y);
     HSLAPixel& pix = png_.getPixel(to_right.x, to_right.y);
-    int delta_val = calculateDelta(init, pix);
+    double delta_val = calculateDelta(init, pix);
     if (delta_val < tolerance_) {
       trav->add(to_right);
     }
   }
-
+  
+  if (isValid(bottom) == true) {
+    HSLAPixel& init = png_.getPixel(initial_.x, initial_.y);
+    HSLAPixel& pix = png_.getPixel(bottom.x, bottom.y);
+    double delta_val = calculateDelta(init, pix);
+    if (delta_val < tolerance_) {
+      trav->add(bottom);
+    }
+  }
+  
   if (isValid(to_left) == true) {
     HSLAPixel& init = png_.getPixel(initial_.x, initial_.y);
     HSLAPixel& pix = png_.getPixel(to_left.x, to_left.y);
-    int delta_val = calculateDelta(init, pix);
+    double delta_val = calculateDelta(init, pix);
     if (delta_val < tolerance_) {
       trav->add(to_left);
     }
@@ -95,22 +105,13 @@ ImageTraversal::Iterator & ImageTraversal::Iterator::operator++() {
   if (isValid(top) == true) {
     HSLAPixel& init = png_.getPixel(initial_.x, initial_.y);
     HSLAPixel& pix = png_.getPixel(top.x, top.y);
-    int delta_val = calculateDelta(init, pix);
+    double delta_val = calculateDelta(init, pix);
     if (delta_val < tolerance_) {
       trav->add(top);
     }
   }
 
-  if (isValid(bottom) == true) {
-    HSLAPixel& init = png_.getPixel(initial_.x, initial_.y);
-    HSLAPixel& pix = png_.getPixel(bottom.x, bottom.y);
-    int delta_val = calculateDelta(init, pix);
-    if (delta_val < tolerance_) {
-      trav->add(bottom);
-    }
-  }
-
-  while(trav->empty() == false && trav->getChecked(trav->peek())) {
+  while(trav->empty() == false && (trav->getChecked(trav->peek()))) {
     //std::cout << "infinite" << std::endl;
     trav->pop();
   }
@@ -142,6 +143,6 @@ Point ImageTraversal::Iterator::operator*() {
  */
 bool ImageTraversal::Iterator::operator!=(const ImageTraversal::Iterator &other) {
   /** @todo [Part 1] */
-  return (!(completed) && !(other.completed));
+  return !((completed) && (other.completed));
 }
 

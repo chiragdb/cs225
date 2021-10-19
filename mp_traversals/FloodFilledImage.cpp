@@ -55,20 +55,27 @@ void FloodFilledImage::addFloodFill(ImageTraversal & traversal, ColorPicker & co
  *   - The final frame, after all pixels have been filed)
  */ 
 Animation FloodFilledImage::animate(unsigned frameInterval) const {
-  /** @todo [Part 2] */
   Animation animation;
-  PNG holder = png_;
-  int inc = 1;
+/** @todo [Part 2] */
+  PNG pic = png_;
   for (unsigned i = 0; i < trav.size(); i++) {
-    animation.addFrame(holder);
-    for (const Point& point : *(trav.at(i))) {
-      if (inc % frameInterval == 0) {
-        animation.addFrame(holder);
+    unsigned fc = 0;
+    ImageTraversal* it = trav.at(i);
+    ImageTraversal::Iterator starting = it->begin();
+    ImageTraversal::Iterator ending = it->end();
+    for (ImageTraversal::Iterator iter = starting; iter != ending; ++iter) {
+      if (fc % frameInterval == 0) {
+        animation.addFrame(pic);
       }
-      holder.getPixel(point.x, point.y) = cp.at(i)->getColor(point.x, point.y);
-      inc++;
+      int x_val = (*iter).x;
+      int y_val = (*iter).y;
+      HSLAPixel& pix = pic.getPixel(x_val, y_val);
+      pix = cp.at(i)->getColor(x_val, y_val);
+      fc++;
     }
-    animation.addFrame(holder);
   }
+  animation.addFrame(pic);
+
+
   return animation;
 }
