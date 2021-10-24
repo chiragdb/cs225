@@ -43,8 +43,17 @@ V BTree<K, V>::find(const BTreeNode* subroot, const K& key) const
      * anywhere in the tree and return the default V.
      */
 
-    return V();
-}
+    if (first_larger_idx < subroot->elements.size()) {
+        if (subroot->elements.at(first_larger_idx) == key) {
+            return subroot->elements.at(first_larger_idx).value;
+        }
+    }
+    if (subroot->is_leaf == false) {
+        return find(subroot->children.at(first_larger_idx), key);
+    } else {
+        return V();
+    }
+} 
 
 /**
  * Inserts a key and value into the BTree. If the key is already in the
@@ -141,6 +150,14 @@ void BTree<K, V>::split_child(BTreeNode* parent, size_t child_idx)
 
 
     /* TODO Your code goes here! */
+    parent->children.insert(child_itr, new_right);
+    parent->elements.insert(elem_itr, child->elements.at(mid_elem_idx));
+
+    new_right->elements.assign(mid_elem_itr + 1, child->elements.end());
+    new_right->children.assign(mid_child_itr, child->children.end());
+
+    new_left->elements.assign(child->elements.begin(), mid_elem_itr);
+    new_left->children.assign(child->children.begin(), mid_child_itr);
 }
 
 /**
@@ -165,4 +182,17 @@ void BTree<K, V>::insert(BTreeNode* subroot, const DataPair& pair)
     size_t first_larger_idx = insertion_idx(subroot->elements, pair);
 
     /* TODO Your code goes here! */
+    if (first_larger_idx < subroot->elements.size()) {
+        if (subroot->elements.at(first_larger_idx) == pair) {
+            return;
+        }
+    }
+    if (subroot->is_leaf == false) {
+        insert(subroot->children.at(first_larger_idx), pair);
+        if (order <= subroot->children.at(first_larger_idx)->elements.size()) {
+            split_child(subroot, first_larger_idx);
+        }
+    } else {
+        subroot->elements.insert(subroot->elements.begin() + first_larger_idx, pair);
+    }
 }
