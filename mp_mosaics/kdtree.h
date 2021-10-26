@@ -259,6 +259,12 @@ class KDTree
     /**
      * @todo Add your helper functions here.
      */
+    void copyHelper(KDTreeNode* subroot, KDTreeNode* otherRoot);
+    void clearMem(KDTreeNode* kd);
+    Point<Dim> quickselectHelper(vector<Point<Dim>>& vect, int dimension, unsigned left, unsigned right, unsigned u);
+    unsigned splitter(std::vector<Point<Dim>>& vect, int dimension, unsigned left, unsigned right, unsigned idx);
+    void swap(std::vector<Point<Dim>>& vect, unsigned index1, unsigned index2);
+    typename KDTree<Dim>::KDTreeNode* createNewNode(std::vector<Point<Dim>>& vect, int dimension, unsigned left, unsigned right);
 };
 
 #include "kdtree.hpp"
