@@ -71,7 +71,19 @@ LPHashTable<K, V>::LPHashTable(LPHashTable<K, V> const& other)
 template <class K, class V>
 void LPHashTable<K, V>::insert(K const& key, V const& value)
 {
+    elems += 1;
+    if (shouldResize() == true) {
+        resizeTable();
+    }
+    size_t index = hashes::hash(key, size);
+    std::pair<K, V>* pair = new std::pair<K, V>(key, value);
 
+    while (should_probe[index] == true) {
+        index += 1;
+        index = index % size;
+    }
+    table[index] = pair;
+    should_probe[index] = true;
     /**
      * @todo Implement this function.
      *
@@ -79,9 +91,6 @@ void LPHashTable<K, V>::insert(K const& key, V const& value)
      * **Do this check *after* increasing elems (but before inserting)!!**
      * Also, don't forget to mark the cell for probing with should_probe!
      */
-
-    (void) key;   // prevent warnings... When you implement this function, remove this line.
-    (void) value; // prevent warnings... When you implement this function, remove this line.
 }
 
 template <class K, class V>
@@ -90,6 +99,12 @@ void LPHashTable<K, V>::remove(K const& key)
     /**
      * @todo: implement this function
      */
+    int index = findIndex(key);
+    if (table[index] != nullptr) {
+        delete table[index];
+        table[index] = nullptr;
+        elems = elems - 1;
+    }
 }
 
 template <class K, class V>
@@ -101,7 +116,16 @@ int LPHashTable<K, V>::findIndex(const K& key) const
      *
      * Be careful in determining when the key is not in the table!
      */
-
+    size_t index = hashes::hash(key, size);
+    while (should_probe[index] == true) {
+        auto val = table[index];
+        if (val != nullptr) {
+            if (val->first == key) {
+                return index;
+            }
+        }
+        index = (index + 1) % size;
+    }
     return -1;
 }
 
@@ -159,4 +183,25 @@ void LPHashTable<K, V>::resizeTable()
      *
      * @hint Use findPrime()!
      */
+    delete[] should_probe;
+    size_t news = findPrime(size * 2);
+    std::pair<K, V>** newt = new std::pair<K, V>*[news];
+    should_probe = new bool[news];
+    for (size_t i = 0; i < news; i++) {
+        newt[i] = nullptr;
+        should_probe[i] = false;
+    }
+    for (size_t j = 0; j < size; j++) {
+        if (table[j] != nullptr) {
+            size_t index = hashes::hash(table[j]->first, news);
+            while (newt[index] != nullptr) {
+                index = (index + 1) % news;
+            }
+            should_probe[index] = true;
+            newt[index] = table[j];
+        }
+    }
+    delete[] table;
+    size = news;
+    table = newt;
 }

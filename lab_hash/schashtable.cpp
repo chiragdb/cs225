@@ -49,11 +49,17 @@ SCHashTable<K, V>::SCHashTable(SCHashTable<K, V> const& other)
 template <class K, class V>
 void SCHashTable<K, V>::insert(K const& key, V const& value)
 {
-
     /**
      * @todo Implement this function.
      *
      */
+     std::pair<K, V> pair(key, value);
+     elems += 1;
+     if (shouldResize() == true) {
+         resizeTable();
+     }
+     size_t index = hashes::hash(key, size);
+     table[index].push_front(pair);
 }
 
 template <class K, class V>
@@ -66,13 +72,30 @@ void SCHashTable<K, V>::remove(K const& key)
      * Please read the note in the lab spec about list iterators and the
      * erase() function on std::list!
      */
-    (void) key; // prevent warnings... When you implement this function, remove this line.
+    size_t index = hashes::hash(key, size);
+    it = table[index].begin();
+    while (it != table[index].end()) {
+        if (it->first == key) {
+            table[index].erase(it);
+            elems = elems - 1;
+            break;
+        }
+        it++;
+    }
 }
 
 template <class K, class V>
 V SCHashTable<K, V>::find(K const& key) const
 {
-
+    size_t index = hashes::hash(key, size);
+    typename std::list<std::pair<K, V>>::iterator it;
+    it = table[index].begin();
+    while (it != table[index].end()) {
+        if (it->first == key) {
+            return it->second;
+        }
+        it++;
+    }
     /**
      * @todo: Implement this function.
      */
@@ -126,12 +149,15 @@ template <class K, class V>
 void SCHashTable<K, V>::resizeTable()
 {
     typename std::list<std::pair<K, V>>::iterator it;
-    /**
-     * @todo Implement this function.
-     *
-     * Please read the note in the spec about list iterators!
-     * The size of the table should be the closest prime to size * 2.
-     *
-     * @hint Use findPrime()!
-     */
+    double news = findPrime(size * 2);
+    auto newt = new std::list<std::pair<K, V>>[news];
+    for (size_t i = 0; i < size; i++) {
+        for (it = table[i].begin(); it != table[i].end(); it++) {
+            unsigned index = hashes::hash(it->first, news);
+            newt[index].push_front(std::pair<K, V>(it->first, it->second));
+        }
+    }
+    delete[] table;
+    size = news;
+    table = newt;
 }
