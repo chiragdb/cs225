@@ -182,10 +182,63 @@ KDTree<Dim>::~KDTree() {
 template <int Dim>
 Point<Dim> KDTree<Dim>::findNearestNeighbor(const Point<Dim>& query) const
 {
-    /**
-     * @todo Implement this function!
-     */
+    return findNearestNeighborHelper(query, root, 0);
+}
 
-    return Point<Dim>();
+template <int Dim>
+Point<Dim> KDTree<Dim>::findNearestNeighborHelper(const Point<Dim>& query, typename KDTree<Dim>::KDTreeNode* curr, int dimension) const
+{
+  if (curr->left == nullptr) {
+    if (curr->right == nullptr) {
+      return curr->point;
+    }
+  }
+  Point<Dim> closePoint = curr->point;
+  Point<Dim> p = closePoint;
+  int newDimension = (dimension + 1) % Dim;
+  bool b = smallerDimVal(query, closePoint, dimension);
+
+  if (b == true) {
+    if (curr->left != nullptr) {
+      p = findNearestNeighborHelper(query, curr->left, newDimension);
+    }
+  } else if (b == false) {
+    if (curr->right != nullptr) {
+      p = findNearestNeighborHelper(query, curr->right, newDimension);
+    }
+  }
+
+  bool temp = shouldReplace(query, closePoint, p);
+  if (temp == true) {
+    closePoint = p;
+  }
+
+  int dimensionRad = (query[dimension] - curr->point[dimension]);
+  dimensionRad = dimensionRad * dimensionRad;
+
+  int rad = 0;
+  for (int i = 0; i < Dim; i++) {
+    int j = (query[i] - closePoint[i]) * (query[i] - closePoint[i]);
+    rad = rad + j;
+  }
+
+  if (dimensionRad <= rad) {
+    if (b == false) {
+      if (curr->left != nullptr) {
+        p = findNearestNeighborHelper(query, curr->left, newDimension);
+        if (shouldReplace(query, closePoint, p)) {
+          closePoint = p;
+        }
+      }
+    } else if (b == true) {
+      if (curr->right != nullptr) {
+        p = findNearestNeighborHelper(query, curr->right, newDimension);
+        if (shouldReplace(query, closePoint, p)) {
+          closePoint = p;
+        }
+      }
+    }
+  }
+  return closePoint;
 }
 

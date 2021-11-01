@@ -265,6 +265,7 @@ class KDTree
     unsigned splitter(std::vector<Point<Dim>>& vect, int dimension, unsigned left, unsigned right, unsigned idx);
     void swap(std::vector<Point<Dim>>& vect, unsigned index1, unsigned index2);
     typename KDTree<Dim>::KDTreeNode* createNewNode(std::vector<Point<Dim>>& vect, int dimension, unsigned left, unsigned right);
+    Point<Dim> findNearestNeighborHelper(const Point<Dim>& query, typename KDTree<Dim>::KDTreeNode* curr, int dimension) const;
 };
 
 #include "kdtree.hpp"

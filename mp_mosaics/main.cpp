@@ -29,6 +29,12 @@ int main(int argc, const char** argv) {
     string pixelsPerTileStr = "50";
     string outFile = "mosaic.png";
 
+    // string inFile = "";
+    // string tileDir = "mosaicPNG/";
+    // string numTilesStr = "100";
+    // string pixelsPerTileStr = "50";
+    // string outFile = "mymosaic.png";
+
     OptionsParser optsparse;
     optsparse.addArg(inFile);
     optsparse.addArg(tileDir);
