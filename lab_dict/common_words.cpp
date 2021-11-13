@@ -47,13 +47,24 @@ void CommonWords::init_file_word_maps(const vector<string>& filenames)
         // get the corresponding vector of words that represents the current
         // file
         vector<string> words = file_to_vector(filenames[i]);
-        /* Your code goes here! */
+        for (std::vector<string>::iterator iter = words.begin(); iter != words.end(); iter++) {
+            file_word_maps[i][*iter] = file_word_maps[i][*iter] + 1;
+        }
     }
 }
 
 void CommonWords::init_common()
 {
-    /* Your code goes here! */
+    for (std::vector<map<string, unsigned int>>::iterator iter = file_word_maps.begin(); iter != file_word_maps.end(); iter++) {
+        for (std::map<string, unsigned int>::iterator it = (*iter).begin(); it != (*iter).end(); it++) {
+            map<string, unsigned int>::iterator i = common.find(it->first);
+            if (i == common.end()) {
+                common[it->first] = 1;
+            } else {
+                common[it->first] = common[it->first] + 1;
+            }
+        }
+    }
 }
 
 /**
@@ -64,7 +75,23 @@ void CommonWords::init_common()
 vector<string> CommonWords::get_common_words(unsigned int n) const
 {
     vector<string> out;
-    /* Your code goes here! */
+    for (std::pair<string, unsigned int> pair : common) {
+        unsigned int size = file_word_maps.size();
+        if (pair.second == size) {
+            int val = 1;
+            for (unsigned int i = 0; i < file_word_maps.size(); i++) {
+                auto a = file_word_maps[i].at(pair.first);
+                if (a < n) {
+                    val = 0;
+                    break;
+                }
+            }
+            if (val) {
+                std::string s = pair.first;
+                out.push_back(s);
+            }
+        }
+    }
     return out;
 }
 

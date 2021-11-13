@@ -1,6 +1,7 @@
 /* Your code here! */
 #include "dsets.h"
 
+
 void DisjointSets::addelements(int num) {
     for (int i = 0; i < num; i++) {
         vect.push_back(-1);
@@ -17,6 +18,7 @@ int DisjointSets::find(int element) {
     }
     return vect.at(element);
 }
+
 
 int DisjointSets::size(int element) {
     int val = find(element);
